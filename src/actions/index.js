@@ -12,9 +12,10 @@ export const setLoading = (status) => ({
   status: status,
 });
 
-export const getArticles = (payload) => ({
+export const getArticles = (payload, id) => ({
   type: GET_ARTICLES,
   payload: payload,
+  id: id,
 });
 
 export function signInAPI() {
@@ -51,10 +52,8 @@ export function signOutAPI() {
 
 export function postArticleAPI(payload) {
   return (dispatch) => {
-
     if (payload.image !== "") {
-        dispatch(setLoading(true));
-
+      dispatch(setLoading(true));
       const upload = storage
         .ref(`images/${payload.image.name}`)
         .put(payload.image);
@@ -69,7 +68,7 @@ export function postArticleAPI(payload) {
             console.log(`Progress:${progress}%`);
           }
         },
-        (error) => alert(error.code),
+        (err) => alert(err),
         async () => {
           const downloadURL = await upload.snapshot.ref.getDownloadURL();
           db.collection("articles").add({
@@ -88,7 +87,7 @@ export function postArticleAPI(payload) {
         }
       );
     } else if (payload.video) {
-        dispatch(setLoading(true));
+      dispatch(setLoading(true));
       db.collection("articles").add({
         actor: {
           description: payload.user.email,
@@ -102,19 +101,43 @@ export function postArticleAPI(payload) {
         description: payload.description,
       });
       dispatch(setLoading(false));
+    } else if (payload.image === "" && payload.video === "") {
+      dispatch(setLoading(true));
+      db.collection("articles").add({
+        actor: {
+          description: payload.user.email,
+          title: payload.user.displayName,
+          date: payload.timestamp,
+          image: payload.user.photoURL,
+        },
+        video: "",
+        sharedImg: "",
+        comments: 0,
+        description: payload.description,
+      });
+      dispatch(setLoading(false));
     }
   };
 }
 
 export function getArticlesAPI() {
   return (dispatch) => {
+    dispatch(setLoading(true));
     let payload;
-
+    let id;
     db.collection("articles")
       .orderBy("actor.date", "desc")
       .onSnapshot((snapshot) => {
         payload = snapshot.docs.map((doc) => doc.data());
-        dispatch(getArticles(payload));
+        id = snapshot.docs.map((doc) => doc.id);
+        dispatch(getArticles(payload, id));
       });
+    dispatch(setLoading(false));
+  };
+}
+
+export function updateArticleAPI(payload) {
+  return (dispatch) => {
+    db.collection("articles").doc(payload.id).update(payload.update);
   };
 }

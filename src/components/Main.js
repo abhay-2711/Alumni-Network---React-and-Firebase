@@ -92,10 +92,10 @@ const Main=(props) => {
                 <SharedImg>
                     <a>
                         {
-                            !article.SharedImg && article.video ? (<ReactPlayer width={'100%'} url={article.video} />
+                            !article.sharedImg && article.video ? (<ReactPlayer width={'100%'} url={article.video} />
                             )
                             :
-                            (article.SharedImg && <img src={article.sharedImg} alt="" />
+                            (article.sharedImg && <img src={article.sharedImg} alt="" />
                             )}
                         
                     </a>

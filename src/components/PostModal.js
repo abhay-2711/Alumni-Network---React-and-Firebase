@@ -100,14 +100,15 @@ const postArticle=(e)=>{
                     {shareImage && <img src={URL.createObjectURL(shareImage)} alt="" />}
                     </UploadImage>
                     ):(
-                    assetArea ==="media" &&
+                    assetArea ==="video" &&
                     <>
                         <input 
                         type="text" 
-                        name="media"
+                        name="video"
+                        id="videoLink"
                         placeholder="Please input a video link" 
                         value={videoLink} 
-                        origin= "https://localhost:3000"
+                        origin= "http://localhost:3000"
                         onChange={(e)=>setVideoLink(e.target.value)} />
                         {videoLink &&  (
                             <ReactPlayer width={"100%"} url={videoLink} />
@@ -122,7 +123,7 @@ const postArticle=(e)=>{
                     <AssetButton onClick={()=>switchAssetArea("image")}>
                         <img src={shareImg} alt="" />
                     </AssetButton>
-                    <AssetButton onClick={()=>switchAssetArea("media")}>
+                    <AssetButton onClick={()=>switchAssetArea("video")}>
                         <img src={shareVideo} alt="" />
                     </AssetButton>
                 </AttachAssets>
